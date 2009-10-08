@@ -39,6 +39,10 @@ if defined? RAILS_ROOT
   Dir.glob(File.join(File.expand_path(RAILS_ROOT), "lib", "paperclip_processors", "*.rb")).each do |processor|
     require processor
   end
+  
+  Dir.glob(File.join(File.dirname(__FILE__), "paperclip", "storage_adapters", "*.rb")).each do |adapter|
+    require adapter
+  end
 end
 
 # The base module that gets included in ActiveRecord::Base. See the
