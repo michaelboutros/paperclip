@@ -1,6 +1,6 @@
 module Paperclip
   module Storage
-    module Remote      
+    module Remote           
       def self.extended(base)
         base.instance_eval do      
           @client = Net::SFTP.start(@options[:host], @options[:username], {:password => @options[:password]}.merge(@options[:ssh_options] || {}) )            
@@ -95,4 +95,20 @@ module Paperclip
       end
     end
   end
+end
+
+ActionController::Routing::Routes.instance_eval do
+  add_route 'download/*path', :controller => 'remote_storage', :action => 'download'
+  def clear!; end
+end
+
+class RemoteStorageController < ActionController::Base
+  def download    
+    begin
+      file = params[:path].first.capitalize.singularize.constantize.find(params[:path][1]).send(params[:path][2].singularize.to_sym)
+      send_data file.to_buffer(params[:path][3]), :disposition => 'inline', :content_type => file.content_type
+    rescue
+      redirect_to '/'
+    end
+  end 
 end
